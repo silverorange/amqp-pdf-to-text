@@ -1,4 +1,4 @@
-gearman-pdf-to-text
+AMQP PDF to Text
 ===================
 
-Gearman worker to convert PDF to plain-text
+AMQP worker to convert PDF to plain-text
