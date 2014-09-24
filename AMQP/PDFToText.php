@@ -2,13 +2,25 @@
 
 /* vim: set noexpandtab tabstop=4 shiftwidth=4 foldmethod=marker: */
 
-require_once 'Site/SiteGearmanApplication.php';
+require_once 'Site/SiteAMQPApplication.php';
 
 /**
- * @licence  http://www.opensource.org/licenses/mit-license.html MIT
- * @copyright 2013 silverorange
+ * Worker that converts a PDF file to plain text
+ *
+ * The worker accepts a JSON-encoded job that contains a single field:
+ * ```
+ * {
+ *   "filename" : "/path/to/pdf.pdf"
+ * }
+ * ```
+ *
+ * The worker returns plain-text data on success.
+ *
+ * @package   AMQP_PDFToText
+ * @license   http://www.opensource.org/licenses/mit-license.html MIT
+ * @copyright 2013-2014 silverorange
  */
-class Gearman_PDFToText extends SiteGearmanApplication
+class AMQP_PDFToText extends SiteAMQPApplication
 {
 	// {{{ protected properties
 
@@ -35,18 +47,18 @@ class Gearman_PDFToText extends SiteGearmanApplication
 	 *   "filename": "/absolute/path/to/file"
 	 * }
 	 *
-	 * @param GearmanJob $job
+	 * @param SiteAMQPJob $job
 	 *
-	 * @return string
+	 * @return void
 	 */
-	protected function doWork(GearmanJob $job)
+	protected function doWork(SiteAMQPJob $job)
 	{
-		$workload = json_decode($job->workload(), true);
+		$workload = json_decode($job->getBody(), true);
 
 		if ($workload === null || !isset($workload['filename'])) {
 			$this->logger->error('Job was not formatted properly.' . PHP_EOL);
 			$job->sendFail();
-			return '';
+			return;
 		}
 
 		$content = '';
@@ -67,13 +79,17 @@ class Gearman_PDFToText extends SiteGearmanApplication
 		$proc = popen($command, 'r');
 		if ($proc !== false) {
 			$content = stream_get_contents($proc);
+
+			// Replace non-breaking spaces with regular spaces. This depends
+			// on the encoding set to UTF-8 above.
 			$content = str_replace("\xc2\xa0", ' ', $content);
+
 			pclose($proc);
 		}
 
 		$this->logger->info('done' . PHP_EOL);
 
-		$job->sendComplete($content);
+		$job->sendSuccess($content);
 	}
 
 	// }}}

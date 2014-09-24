@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <command>
-	<description>Gearman worker that converts PDF files to text.</description>
+	<description>AMQP worker that converts PDF files to text.</description>
 	<version>1.0</version>
 </command>

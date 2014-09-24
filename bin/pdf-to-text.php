@@ -8,24 +8,21 @@ error_reporting(E_ALL | E_STRICT);
 if (class_exists('PackageConfig')) {
 	PackageConfig::addPackage('swat');
 	PackageConfig::addPackage('site');
-	PackageConfig::addPackage('hot-date');
 }
 
-require_once 'Site/SiteGearmanCommandLine.php';
+require_once 'Site/SiteAMQPCommandLine.php';
 require_once 'Site/SiteCommandLineLogger.php';
-require_once 'Gearman/PDFToText.php';
+require_once 'AMQP/PDFToText.php';
 
-$parser = SiteGearmanCommandLine::fromXMLFile(
+$parser = SiteAMQPCommandLine::fromXMLFile(
 	__DIR__ . '/../data/pdf-to-text.xml'
 );
 
 $logger = new SiteCommandLineLogger($parser);
-$worker = new GearmanWorker();
-$app = new Gearman_PDFToText(
+$app = new AMQP_PDFToText(
 	'pdf-to-text',
 	$parser,
-	$logger,
-	$worker
+	$logger
 );
 $app();
 
