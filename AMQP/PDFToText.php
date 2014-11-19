@@ -57,7 +57,7 @@ class AMQP_PDFToText extends SiteAMQPApplication
 
 		if ($workload === null || !isset($workload['filename'])) {
 			$this->logger->error('Job was not formatted properly.' . PHP_EOL);
-			$job->sendFail();
+			$job->sendFail('Job was not formatted properly.');
 			return;
 		}
 
@@ -65,14 +65,14 @@ class AMQP_PDFToText extends SiteAMQPApplication
 
 		if (!file_exists($workload['filename'])) {
 			$this->logger->error('PDF file was not found.' . PHP_EOL);
-			$job->sendFail();
+			$job->sendFail('PDF file was not found.');
 			return;
 		}
 
 		if (!is_file($workload['filename']) ||
 			!is_readable($workload['filename'])) {
 			$this->logger->error('PDF file could not be opened.' . PHP_EOL);
-			$job->sendFail();
+			$job->sendFail('PDF file could not be opened.');
 			return;
 		}
 
