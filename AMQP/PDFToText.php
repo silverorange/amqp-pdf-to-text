@@ -63,6 +63,19 @@ class AMQP_PDFToText extends SiteAMQPApplication
 
 		$content = '';
 
+		if (!file_exists($workload['filename'])) {
+			$this->logger->error('PDF file was not found.' . PHP_EOL);
+			$job->sendFail();
+			return;
+		}
+
+		if (!is_file($workload['filename']) ||
+			!is_readable($workload['filename'])) {
+			$this->logger->error('PDF file could not be opened.' . PHP_EOL);
+			$job->sendFail();
+			return;
+		}
+
 		$this->logger->info(
 			'Converting PDF "{filename}" ... ',
 			array(
