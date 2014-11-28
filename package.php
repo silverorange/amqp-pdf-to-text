@@ -55,15 +55,18 @@ $package->setOptions(
 		'packagedirectory'        => './',
 		'dir_roles'               => array(
 			'AMQP'                => 'php',
-			'bin'                 => 'php',
 			'data'                => 'data',
 		),
 		'exceptions'              => array(
 			'README.md'           => 'doc',
+			'bin/pdf-to-text.php' => 'script',
 		),
 		'ignore'                  => array(
 			'package.php',
 			'*.tgz',
+		),
+		'installexceptions'       => array(
+			'bin/pdf-to-text.php' => '/',
 		),
 	)
 );
@@ -98,6 +101,20 @@ $package->addMaintainer(
 	'mike@silverorange.com'
 );
 
+$package->addReplacement(
+	'bin/pdf-to-text.php',
+	'pear-config',
+	'@data-dir@',
+	'data_dir'
+);
+
+$package->addReplacement(
+	'bin/pdf-to-text.php',
+	'package-info',
+	'@package-name@',
+	'name'
+);
+
 $package->addPackageDepWithChannel(
 	'required',
 	'Site',
@@ -106,6 +123,7 @@ $package->addPackageDepWithChannel(
 );
 
 $package->setPhpDep('5.3.0');
+$package->addInstallAs('bin/pdf-to-text.php', 'pdf-to-text');
 $package->setPearInstallerDep('1.4.0');
 $package->generateContents();
 
