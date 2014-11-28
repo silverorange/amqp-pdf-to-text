@@ -8,17 +8,21 @@ require_once 'Site/SiteAMQPCommandLine.php';
 require_once 'Site/SiteCommandLineLogger.php';
 require_once 'AMQP/PDFToText.php';
 
+$dir = '@data-dir@/@package-name@/data';
+if ($dir[0] == '@') {
+	$dir = __DIR__ . '/../data';
+}
+
 $parser = SiteAMQPCommandLine::fromXMLFile(
-	__DIR__ . '/../data/pdf-to-text.xml'
+	$dir . '/pdf-to-text.xml'
 );
 
 $logger = new SiteCommandLineLogger($parser);
-$config = __DIR__ . '/../data/pdf-to-text.ini';
 $app = new AMQP_PDFToText(
 	'pdf-to-text',
 	$parser,
 	$logger,
-	$config
+	$dir . '/pdf-to-text.ini'
 );
 $app();
 
