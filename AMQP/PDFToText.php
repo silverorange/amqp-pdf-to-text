@@ -18,7 +18,7 @@ require_once 'Site/SiteAMQPApplication.php';
  *
  * @package   AMQP_PDFToText
  * @license   http://www.opensource.org/licenses/mit-license.html MIT
- * @copyright 2013-2014 silverorange
+ * @copyright 2013-2015 silverorange
  */
 class AMQP_PDFToText extends SiteAMQPApplication
 {
