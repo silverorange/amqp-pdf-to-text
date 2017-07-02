@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Site/SiteAMQPApplication.php';
-
 /**
  * Worker that converts a PDF file to plain text
  *
