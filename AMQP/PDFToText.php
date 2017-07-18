@@ -20,90 +20,90 @@ require_once 'Site/SiteAMQPApplication.php';
  */
 class AMQP_PDFToText extends SiteAMQPApplication
 {
-	// {{{ protected properties
+    // {{{ protected properties
 
-	/**
-	 * @var string
-	 */
-	protected $bin = '';
+    /**
+     * @var string
+     */
+    protected $bin = '';
 
-	// }}}
-	// {{{ protected function init()
+    // }}}
+    // {{{ protected function init()
 
-	protected function init()
-	{
-		parent::init();
-		$this->bin = trim(`which pdftotext`);
-	}
+    protected function init()
+    {
+        parent::init();
+        $this->bin = trim(`which pdftotext`);
+    }
 
-	// }}}
-	// {{{ protected function doWork()
+    // }}}
+    // {{{ protected function doWork()
 
-	/**
-	 * Expects JSON in the form:
-	 * {
-	 *   "filename": "/absolute/path/to/file"
-	 * }
-	 *
-	 * @param SiteAMQPJob $job
-	 *
-	 * @return void
-	 */
-	protected function doWork(SiteAMQPJob $job)
-	{
-		$workload = json_decode($job->getBody(), true);
+    /**
+     * Expects JSON in the form:
+     * {
+     *   "filename": "/absolute/path/to/file"
+     * }
+     *
+     * @param SiteAMQPJob $job
+     *
+     * @return void
+     */
+    protected function doWork(SiteAMQPJob $job)
+    {
+        $workload = json_decode($job->getBody(), true);
 
-		if ($workload === null || !isset($workload['filename'])) {
-			$this->logger->error('Job was not formatted properly.' . PHP_EOL);
-			$job->sendFail('Job was not formatted properly.');
-			return;
-		}
+        if ($workload === null || !isset($workload['filename'])) {
+            $this->logger->error('Job was not formatted properly.' . PHP_EOL);
+            $job->sendFail('Job was not formatted properly.');
+            return;
+        }
 
-		$content = '';
+        $content = '';
 
-		if (!file_exists($workload['filename'])) {
-			$this->logger->error('PDF file was not found.' . PHP_EOL);
-			$job->sendFail('PDF file was not found.');
-			return;
-		}
+        if (!file_exists($workload['filename'])) {
+            $this->logger->error('PDF file was not found.' . PHP_EOL);
+            $job->sendFail('PDF file was not found.');
+            return;
+        }
 
-		if (!is_file($workload['filename']) ||
-			!is_readable($workload['filename'])) {
-			$this->logger->error('PDF file could not be opened.' . PHP_EOL);
-			$job->sendFail('PDF file could not be opened.');
-			return;
-		}
+        if (!is_file($workload['filename']) ||
+            !is_readable($workload['filename'])) {
+            $this->logger->error('PDF file could not be opened.' . PHP_EOL);
+            $job->sendFail('PDF file could not be opened.');
+            return;
+        }
 
-		$this->logger->info(
-			'Converting PDF "{filename}" ... ',
-			array(
-				'filename' => $workload['filename']
-			)
-		);
+        $this->logger->info(
+            'Converting PDF "{filename}" ... ',
+            array(
+                'filename' => $workload['filename']
+            )
+        );
 
-		$command = sprintf(
-			'%s -q -enc \'UTF-8\' -eol unix %s -',
-			$this->bin,
-			escapeshellarg($workload['filename'])
-		);
+        $command = sprintf(
+            '%s -q -enc \'UTF-8\' -eol unix %s -',
+            $this->bin,
+            escapeshellarg($workload['filename'])
+        );
 
-		$proc = popen($command, 'r');
-		if ($proc !== false) {
-			$content = stream_get_contents($proc);
+        $proc = popen($command, 'r');
+        if ($proc !== false) {
+            $content = stream_get_contents($proc);
 
-			// Replace non-breaking spaces with regular spaces. This depends
-			// on the encoding set to UTF-8 above.
-			$content = str_replace("\xc2\xa0", ' ', $content);
+            // Replace non-breaking spaces with regular spaces. This depends
+            // on the encoding set to UTF-8 above.
+            $content = str_replace("\xc2\xa0", ' ', $content);
 
-			pclose($proc);
-		}
+            pclose($proc);
+        }
 
-		$this->logger->info('done' . PHP_EOL);
+        $this->logger->info('done' . PHP_EOL);
 
-		$job->sendSuccess($content);
-	}
+        $job->sendSuccess($content);
+    }
 
-	// }}}
+    // }}}
 }
 
 ?>
