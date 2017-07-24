@@ -15,8 +15,8 @@ require_once 'Site/SiteAMQPApplication.php';
  * The worker returns plain-text data on success.
  *
  * @package   AMQP_PDFToText
- * @license   http://www.opensource.org/licenses/mit-license.html MIT
  * @copyright 2013-2015 silverorange
+ * @license   http://www.opensource.org/licenses/mit-license.html MIT
  */
 class AMQP_PDFToText extends SiteAMQPApplication
 {
@@ -67,8 +67,9 @@ class AMQP_PDFToText extends SiteAMQPApplication
             return;
         }
 
-        if (!is_file($workload['filename']) ||
-            !is_readable($workload['filename'])) {
+        if (!is_file($workload['filename'])
+            || !is_readable($workload['filename'])
+        ) {
             $this->logger->error('PDF file could not be opened.' . PHP_EOL);
             $job->sendFail('PDF file could not be opened.');
             return;

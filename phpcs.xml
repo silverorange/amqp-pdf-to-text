@@ -5,9 +5,9 @@
   <arg name="extensions" value="php" />
   <arg name="encoding" value="utf-8" />
   <arg name="warning-severity" value="0" />
-  <arg value="p" /><!-- show progress -->
+  <arg value="ps" /><!-- show progress -->
 
   <file>./AMQP</file>
 
-  <rule ref="PEAR" />
+  <rule ref="SilverorangePEAR" />
 </ruleset>
